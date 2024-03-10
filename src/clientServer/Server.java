@@ -31,9 +31,9 @@ public class Server  extends Thread {
 
 		/* COMPLETE 1a: create ServerSocket and get ready to spawn new server instances 
 		 * to service incoming connections (on demand approach) */
-		
-		
-		
+		serverSocket = new ServerSocket(4445);	
+		connection = serverSocket.accept();
+		new Server(connection).start();
 	}
 	// LAUNCHER ENDS HERE
 	
@@ -45,6 +45,7 @@ public class Server  extends Thread {
 	private PrintWriter outputChannel;
 
 	/* COMPLETE 1b: declare other necessary attributes here */
+	private static ServerSocket serverSocket;
 	
 	
 	
@@ -66,7 +67,13 @@ public class Server  extends Thread {
 	public void innerRun() throws IOException {
 		/* COMPLETE 2 
 		 * Here service one client */
-		
+		Request request;
+		while (true) {
+			request = this.receiveRequest();
+			if (!this.handleRequest(request))
+				break;
+		}	
+		disconnect();
 		
 	}
 
@@ -75,6 +82,37 @@ public class Server  extends Thread {
 	 * getting a new question for the client, keeping track of the questions
 	 * already sent to the client...
 	 */
+
+	// Handles client request and returns false if the client wants to disconnect
+	private boolean handleRequest(Request request) {
+		System.out.print("Client says: " + request.type);
+		System.out.println(", " + request.info);
+		if (request.type.equals("HELLO")) {
+			try {
+				this.sendReply("HELLO");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else if (request.type.equals("NEXT")) {
+			try {
+				this.sendRandomQuestion(request.info);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else if (request.type.equals("STOP")) {
+			return false;
+		} else {
+			System.out.println("Unknown request type: " + request.type);
+		}
+
+		return true;
+	}
+
+	private void sendRandomQuestion(String type) throws IOException {
+		Question q = geo.get(0);
+		if(q != null) this.sendReply(q.toString());
+		else this.sendReply("NO MORE " + type + " QUESTIONS");
+	}
 	
 
 	private Request receiveRequest() throws IOException {
