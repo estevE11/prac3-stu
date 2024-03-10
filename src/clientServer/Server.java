@@ -31,8 +31,16 @@ public class Server  extends Thread {
 
 		/* COMPLETE 1a: create ServerSocket and get ready to spawn new server instances 
 		 * to service incoming connections (on demand approach) */
-		
-		
+		ServerSocket serverSocket = new ServerSocket(4445); // Create a server socket on port 4445
+
+		while (true) { // Loop forever, accepting client connections
+			Socket clientSocket = serverSocket.accept(); // Wait for a client to connect
+			synchronized (clientSocket){
+				Server server = new Server(clientSocket); // Create a new Server to handle the client
+				server.start(); // Start the server thread
+			}
+		}
+
 		
 	}
 	// LAUNCHER ENDS HERE
@@ -66,7 +74,46 @@ public class Server  extends Thread {
 	public void innerRun() throws IOException {
 		/* COMPLETE 2 
 		 * Here service one client */
-		
+		Request request;
+		while (true){
+			request = receiveRequest();
+			if (request.type.equals("HELLO")) {
+				sendReply("HELLO test server");
+			}
+			else if (request.type.equals("NEXT")) {
+				switch (request.info) {
+				case "GEO":
+					if (geo.isEmpty()) {
+						sendReply("NO MORE GEO questions");
+					}
+					else {
+						sendReply(geo.remove(0).toString());
+					}
+					break;
+				case "ART":
+					if (art.isEmpty()) {
+						sendReply("NO MORE ART questions");
+					}
+					else {
+						sendReply(art.remove(0).toString());
+					}
+					break;
+				case "SCIENCE":
+					if (science.isEmpty()) {
+						sendReply("NO MORE SCIENCE questions");
+					}
+					else {
+						sendReply(science.remove(0).toString());
+					}
+					break;
+				}
+			}
+			else if (request.type.equals("STOP")) {
+				sendReply("GOODBYE");
+				disconnect();
+				break;
+			}
+		}
 		
 	}
 
