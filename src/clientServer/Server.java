@@ -89,16 +89,31 @@ public class Server  extends Thread {
 	 */
 
 	// Handles client request and returns false if the client wants to disconnect
-	private boolean handleRequest(Request request) throws IOException{
+	private boolean handleRequest(Request request) throws IOException {
 		System.out.print("Client says: " + request.type);
 		System.out.println(", " + request.info);
 
-		if (request.type.equals("HELLO"))  this.sendReply("HELLO");
-		else if (request.type.equals("NEXT")) this.sendRandomQuestion(request.info);
-		else if (request.type.equals("STOP")) return false;
-		else System.out.println("Unknown request type: " + request.type); // Hay que cambiar esto, ns q hay q hacer pero esto no...
+		if (request.type.equals("HELLO"))
+			this.sendReply("HELLO");
+		else if (request.type.equals("NEXT"))
+			return this.handleNext(request.info);
+		else if (request.type.equals("STOP"))
+			return false;
+		else {
+			this.sendReply("BAD REQUEST");
+			return false;
+		}
 
 		return true;
+	}
+
+	private boolean handleNext(String type) throws IOException {
+		if(type.equals("GEO") || type.equals("ART") || type.equals("SCIENCE")) {
+			this.sendRandomQuestion(type);
+			return true;
+		}
+		this.sendReply("BAD REQUEST");
+		return false;
 	}
 
 	private void sendRandomQuestion(String type) throws IOException {
@@ -115,7 +130,6 @@ public class Server  extends Thread {
 		LinkedList<Integer> questionsLeft = this.questionsLeft.get(type);
 		if (questionsLeft.size() > 0) {
 			int index = (int) (Math.random() * questionsLeft.size());
-			System.out.println("index: " + index + " size: " + questionsLeft.size() + " type: " + type);
 
 			if(type.equals("ART")) q = art.get(questionsLeft.get(index));
 			else if(type.equals("SCIENCE")) q = science.get(questionsLeft.get(index));
