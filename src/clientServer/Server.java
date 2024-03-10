@@ -46,6 +46,8 @@ public class Server  extends Thread {
 
 	/* COMPLETE 1b: declare other necessary attributes here */
 	private static ServerSocket serverSocket;
+
+	private HashMap<String, LinkedList<Integer>> questionsLeft = new HashMap<String, LinkedList<Integer>>();
 	
 	
 	
@@ -54,6 +56,9 @@ public class Server  extends Thread {
 		this.inputChannel = new BufferedReader(new InputStreamReader(this.connection.getInputStream()));
 		this.outputChannel = new PrintWriter(this.connection.getOutputStream(), true);
 		/* COMPLETE 1bb: (optional) initialize other attributes */
+		questionsLeft.put("GEO", geo.stream().mapToInt((q) -> geo.indexOf(q)).collect(LinkedList::new, LinkedList::add, LinkedList::addAll));
+		questionsLeft.put("ART", art.stream().mapToInt((q) -> art.indexOf(q)).collect(LinkedList::new, LinkedList::add, LinkedList::addAll));
+		questionsLeft.put("SCIENCE", science.stream().mapToInt((q) -> science.indexOf(q)).collect(LinkedList::new, LinkedList::add, LinkedList::addAll));
 	}
 
 	public void run() {
@@ -109,9 +114,32 @@ public class Server  extends Thread {
 	}
 
 	private void sendRandomQuestion(String type) throws IOException {
-		Question q = geo.get(0);
-		if(q != null) this.sendReply(q.toString());
-		else this.sendReply("NO MORE " + type + " QUESTIONS");
+		Question q = getRandomQuestion(type);
+		if (q != null)
+			this.sendReply(q.toString());
+		else
+			this.sendReply("NO MORE " + type + " QUESTIONS");
+	}
+
+	private Question getRandomQuestion(String type) {
+		Question q = null;
+		
+		LinkedList<Integer> questionsLeft = this.questionsLeft.get(type);
+		if (questionsLeft.size() > 0) {
+			int index = (int) (Math.random() * questionsLeft.size());
+			System.out.println("index: " + index + " size: " + questionsLeft.size() + " type: " + type);
+
+			if(type.equals("ART"))
+				q = art.get(questionsLeft.get(index));
+			else if(type.equals("SCIENCE"))
+				q = science.get(questionsLeft.get(index));
+			else if(type.equals("GEO"))
+				q = geo.get(questionsLeft.get(index));
+
+			questionsLeft.remove(index);
+			return q;
+		}
+		return null;
 	}
 	
 
