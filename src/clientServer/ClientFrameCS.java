@@ -272,9 +272,9 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 				btnGeography.setEnabled(false);
 			}
 			else {
-				Question q = Question.fromString(reply);
-				lblQuestion.setText(q.getTheQuestion());
-				String [] answers = q.getAnswers();
+				currentQuestion = Question.fromString(reply);
+				lblQuestion.setText(currentQuestion.getTheQuestion());
+				String [] answers = currentQuestion.getAnswers();
 				rdbtnAnswer1.setText(answers[0]);
 				rdbtnAnswer2.setText(answers[1]);
 				rdbtnAnswer3.setText(answers[2]);
@@ -302,9 +302,9 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 				btnScience.setEnabled(false);
 			}
 			else {
-				Question q = Question.fromString(reply);
-				lblQuestion.setText(q.getTheQuestion());
-				String [] answers = q.getAnswers();
+				currentQuestion = Question.fromString(reply);
+				lblQuestion.setText(currentQuestion.getTheQuestion());
+				String [] answers = currentQuestion.getAnswers();
 				rdbtnAnswer1.setText(answers[0]);
 				rdbtnAnswer2.setText(answers[1]);
 				rdbtnAnswer3.setText(answers[2]);
@@ -332,9 +332,9 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 				btnArt.setEnabled(false);
 			}
 			else {
-				Question q = Question.fromString(reply);
-				lblQuestion.setText(q.getTheQuestion());
-				String [] answers = q.getAnswers();
+				currentQuestion = Question.fromString(reply);
+				lblQuestion.setText(currentQuestion.getTheQuestion());
+				String [] answers = currentQuestion.getAnswers();
 				rdbtnAnswer1.setText(answers[0]);
 				rdbtnAnswer2.setText(answers[1]);
 				rdbtnAnswer3.setText(answers[2]);
@@ -367,23 +367,33 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 	
 	protected void rdbtnAnswer1actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		selectedAnswer = 1;
 	}
 	
 	protected void rdbtnAnswer2actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		selectedAnswer = 2;
 	}
 	
 	protected void rdbtnAnswer3actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		selectedAnswer = 3;
 	}
 	
 	protected void rdbtnAnswer4actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		selectedAnswer = 4;
 	}
-	
-	
+
+
 	protected void btnCheckactionPerformed(ActionEvent arg0) {
-		/* COMPLETE */
+		if (currentQuestion.getCorrect() == selectedAnswer) {
+			lblCorrect.setText("Correct!");
+		} else {
+			lblCorrect.setText("Incorrect, the correct answer was " + currentQuestion.getCorrect());
+		}
+		selectedAnswer = -1;
+		lblCorrect.setVisible(true);
 	}
 	
 	// ----------------- My stuff starts here --------------
@@ -394,8 +404,8 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 	private Socket connection;
 	
 	/* COMPLETE: add other necessary attributes */
-
-	
+	private Question currentQuestion;
+	private int selectedAnswer = -1;
 	/* COMPLETE: add other auxiliary private methods: to request a question to the server, 
 	 * to display a question and its four answers... 
 	 */

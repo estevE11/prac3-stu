@@ -34,8 +34,8 @@ public class Server  extends Thread {
 		serverSocket = new ServerSocket(4445); // Create a server socket on port 4445
 
 
-		Socket clientSocket = serverSocket.accept(); // Wait for a client to connect
-		Server server = new Server(clientSocket); // Create a new Server to handle the client
+		connection = serverSocket.accept(); // Wait for a client to connect
+		Server server = new Server(connection); // Create a new Server to handle the client
 		server.start(); // Start the server thread
 
 
