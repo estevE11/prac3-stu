@@ -31,15 +31,14 @@ public class Server  extends Thread {
 
 		/* COMPLETE 1a: create ServerSocket and get ready to spawn new server instances 
 		 * to service incoming connections (on demand approach) */
-		ServerSocket serverSocket = new ServerSocket(4445); // Create a server socket on port 4445
+		serverSocket = new ServerSocket(4445); // Create a server socket on port 4445
 
-		while (true) { // Loop forever, accepting client connections
-			Socket clientSocket = serverSocket.accept(); // Wait for a client to connect
-			synchronized (clientSocket){
-				Server server = new Server(clientSocket); // Create a new Server to handle the client
-				server.start(); // Start the server thread
-			}
-		}
+
+		Socket clientSocket = serverSocket.accept(); // Wait for a client to connect
+		Server server = new Server(clientSocket); // Create a new Server to handle the client
+		server.start(); // Start the server thread
+
+
 
 		
 	}
@@ -54,7 +53,7 @@ public class Server  extends Thread {
 
 	/* COMPLETE 1b: declare other necessary attributes here */
 	
-	
+	private static ServerSocket serverSocket;
 	
 	public Server(Socket connection) throws IOException {
 		this.connection = connection;
@@ -112,6 +111,9 @@ public class Server  extends Thread {
 				sendReply("GOODBYE");
 				disconnect();
 				break;
+			}
+			else {
+				sendReply("UNKNOWN REQUEST");
 			}
 		}
 		

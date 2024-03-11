@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import javax.swing.JRadioButton;
@@ -246,22 +247,122 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 	
 	protected void btnConnectactionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		try {
+			connect();
+			sendRequest("HELLO "+name_textField.getText());
+			String reply = receiveReply();
+			JOptionPane.showMessageDialog(this, reply);
+			btnGeography.setEnabled(true);
+			btnScience.setEnabled(true);
+			btnArt.setEnabled(true);
+			btnConnect.setEnabled(false);
+			name_textField.setEnabled(false);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Connection error");
+		}
 	}
 	
 	protected void btnGeographyactionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		try {
+			sendRequest("NEXT GEO");
+			String reply = receiveReply();
+			if (reply.toUpperCase().contains("NO MORE")) {
+				JOptionPane.showMessageDialog(this, reply);
+				btnGeography.setEnabled(false);
+			}
+			else {
+				Question q = Question.fromString(reply);
+				lblQuestion.setText(q.getTheQuestion());
+				String [] answers = q.getAnswers();
+				rdbtnAnswer1.setText(answers[0]);
+				rdbtnAnswer2.setText(answers[1]);
+				rdbtnAnswer3.setText(answers[2]);
+				rdbtnAnswer4.setText(answers[3]);
+				lblCorrect.setVisible(false);
+				rdbtnAnswer1.setEnabled(true);
+				rdbtnAnswer2.setEnabled(true);
+				rdbtnAnswer3.setEnabled(true);
+				rdbtnAnswer4.setEnabled(true);
+				btnCheck.setEnabled(true);
+				btnPlayNoMore.setEnabled(true);
+			}
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Connection error");
+		}
 	}
 	
 	protected void btnScienceactionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		try {
+			sendRequest("NEXT SCIENCE");
+			String reply = receiveReply();
+			if (reply.toUpperCase().contains("NO MORE")) {
+				JOptionPane.showMessageDialog(this, reply);
+				btnScience.setEnabled(false);
+			}
+			else {
+				Question q = Question.fromString(reply);
+				lblQuestion.setText(q.getTheQuestion());
+				String [] answers = q.getAnswers();
+				rdbtnAnswer1.setText(answers[0]);
+				rdbtnAnswer2.setText(answers[1]);
+				rdbtnAnswer3.setText(answers[2]);
+				rdbtnAnswer4.setText(answers[3]);
+				lblCorrect.setVisible(false);
+				rdbtnAnswer1.setEnabled(true);
+				rdbtnAnswer2.setEnabled(true);
+				rdbtnAnswer3.setEnabled(true);
+				rdbtnAnswer4.setEnabled(true);
+				btnCheck.setEnabled(true);
+				btnPlayNoMore.setEnabled(true);
+			}
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Connection error");
+		}
 	}
 	
 	protected void btnArtactionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		try {
+			sendRequest("NEXT ART");
+			String reply = receiveReply();
+			if (reply.toUpperCase().contains("NO MORE")) {
+				JOptionPane.showMessageDialog(this, reply);
+				btnArt.setEnabled(false);
+			}
+			else {
+				Question q = Question.fromString(reply);
+				lblQuestion.setText(q.getTheQuestion());
+				String [] answers = q.getAnswers();
+				rdbtnAnswer1.setText(answers[0]);
+				rdbtnAnswer2.setText(answers[1]);
+				rdbtnAnswer3.setText(answers[2]);
+				rdbtnAnswer4.setText(answers[3]);
+				lblCorrect.setVisible(false);
+				rdbtnAnswer1.setEnabled(true);
+				rdbtnAnswer2.setEnabled(true);
+				rdbtnAnswer3.setEnabled(true);
+				rdbtnAnswer4.setEnabled(true);
+				btnCheck.setEnabled(true);
+				btnPlayNoMore.setEnabled(true);
+			}
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Connection error");
+		}
 	}
 	
 	protected void btnPlayNoMoreactionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		try {
+			sendRequest("STOP now");
+			String reply = receiveReply();
+			JOptionPane.showMessageDialog(this, reply);
+			disconnect();
+			System.exit(0);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Connection error");
+		}
 	}
 	
 	protected void rdbtnAnswer1actionPerformed(ActionEvent arg0) {
@@ -293,7 +394,7 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 	private Socket connection;
 	
 	/* COMPLETE: add other necessary attributes */
-	
+
 	
 	/* COMPLETE: add other auxiliary private methods: to request a question to the server, 
 	 * to display a question and its four answers... 
