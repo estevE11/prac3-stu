@@ -31,16 +31,9 @@ public class Server  extends Thread {
 
 		/* COMPLETE 1a: create ServerSocket and get ready to spawn new server instances 
 		 * to service incoming connections (on demand approach) */
-		serverSocket = new ServerSocket(4445); // Create a server socket on port 4445
-
-
-		connection = serverSocket.accept(); // Wait for a client to connect
-		Server server = new Server(connection); // Create a new Server to handle the client
-		server.start(); // Start the server thread
-
-
-
-		
+		serverSocket = new ServerSocket(4445);	
+		connection = serverSocket.accept();
+		new Server(connection).start();
 	}
 	// LAUNCHER ENDS HERE
 	
@@ -52,14 +45,19 @@ public class Server  extends Thread {
 	private PrintWriter outputChannel;
 
 	/* COMPLETE 1b: declare other necessary attributes here */
-	
 	private static ServerSocket serverSocket;
+
+	private HashMap<String, LinkedList<Integer>> questionsLeft = new HashMap<String, LinkedList<Integer>>();
+	
 	
 	public Server(Socket connection) throws IOException {
 		this.connection = connection;
 		this.inputChannel = new BufferedReader(new InputStreamReader(this.connection.getInputStream()));
 		this.outputChannel = new PrintWriter(this.connection.getOutputStream(), true);
 		/* COMPLETE 1bb: (optional) initialize other attributes */
+		questionsLeft.put("GEO", geo.stream().mapToInt((q) -> geo.indexOf(q)).collect(LinkedList::new, LinkedList::add, LinkedList::addAll));
+		questionsLeft.put("ART", art.stream().mapToInt((q) -> art.indexOf(q)).collect(LinkedList::new, LinkedList::add, LinkedList::addAll));
+		questionsLeft.put("SCIENCE", science.stream().mapToInt((q) -> science.indexOf(q)).collect(LinkedList::new, LinkedList::add, LinkedList::addAll));
 	}
 
 	public void run() {
@@ -74,48 +72,12 @@ public class Server  extends Thread {
 		/* COMPLETE 2 
 		 * Here service one client */
 		Request request;
-		while (true){
-			request = receiveRequest();
-			if (request.type.equals("HELLO")) {
-				sendReply("HELLO test server");
-			}
-			else if (request.type.equals("NEXT")) {
-				switch (request.info) {
-				case "GEO":
-					if (geo.isEmpty()) {
-						sendReply("NO MORE GEO questions");
-					}
-					else {
-						sendReply(geo.remove(0).toString());
-					}
-					break;
-				case "ART":
-					if (art.isEmpty()) {
-						sendReply("NO MORE ART questions");
-					}
-					else {
-						sendReply(art.remove(0).toString());
-					}
-					break;
-				case "SCIENCE":
-					if (science.isEmpty()) {
-						sendReply("NO MORE SCIENCE questions");
-					}
-					else {
-						sendReply(science.remove(0).toString());
-					}
-					break;
-				}
-			}
-			else if (request.type.equals("STOP")) {
-				sendReply("GOODBYE");
-				disconnect();
+		while (true) {
+			request = this.receiveRequest();
+			if (!this.handleRequest(request))
 				break;
-			}
-			else {
-				sendReply("UNKNOWN REQUEST");
-			}
-		}
+		}	
+		disconnect();
 		
 	}
 
@@ -124,6 +86,59 @@ public class Server  extends Thread {
 	 * getting a new question for the client, keeping track of the questions
 	 * already sent to the client...
 	 */
+
+	// Handles client request and returns false if the client wants to disconnect
+	private boolean handleRequest(Request request) throws IOException {
+		System.out.print("Client says: " + request.type);
+		System.out.println(", " + request.info);
+
+		if (request.type.equals("HELLO"))
+			this.sendReply("HELLO");
+		else if (request.type.equals("NEXT"))
+			return this.handleNext(request.info);
+		else if (request.type.equals("STOP"))
+			return false;
+		else {
+			this.sendReply("BAD REQUEST");
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean handleNext(String type) throws IOException {
+		if(type.equals("GEO") || type.equals("ART") || type.equals("SCIENCE")) {
+			this.sendRandomQuestion(type);
+			return true;
+		}
+		this.sendReply("BAD REQUEST");
+		return false;
+	}
+
+	private void sendRandomQuestion(String type) throws IOException {
+		Question q = getRandomQuestion(type);
+		if (q != null)
+			this.sendReply(q.toString());
+		else
+			this.sendReply("NO MORE " + type + " QUESTIONS");
+	}
+
+	private Question getRandomQuestion(String type) {
+		Question q = null;
+		
+		LinkedList<Integer> questionsLeft = this.questionsLeft.get(type);
+		if (questionsLeft.size() > 0) {
+			int index = (int) (Math.random() * questionsLeft.size());
+
+			if(type.equals("ART")) q = art.get(questionsLeft.get(index));
+			else if(type.equals("SCIENCE")) q = science.get(questionsLeft.get(index));
+			else if(type.equals("GEO")) q = geo.get(questionsLeft.get(index));
+
+			questionsLeft.remove(index);
+			return q;
+		}
+		return null;
+	}
 	
 
 	private Request receiveRequest() throws IOException {

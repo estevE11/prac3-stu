@@ -55,6 +55,24 @@ public class TrivialSolitaireImpl extends UnicastRemoteObject implements Trivial
 		/* COMPLETE if needed 1b: Constructor ... */
 	}
 
+	@Override
+	public int Hello() throws RemoteException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'Hello'");
+	}
+
+	@Override
+	public Question next(int id, String type) throws RemoteException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'next'");
+	}
+
+	@Override
+	public void stop(int id) throws RemoteException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'stop'");
+	}
+
 	/* COMPLETE 2: implement interface and other helper methods */
 	
 
