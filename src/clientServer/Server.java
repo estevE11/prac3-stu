@@ -50,7 +50,6 @@ public class Server  extends Thread {
 	private HashMap<String, LinkedList<Integer>> questionsLeft = new HashMap<String, LinkedList<Integer>>();
 	
 	
-	
 	public Server(Socket connection) throws IOException {
 		this.connection = connection;
 		this.inputChannel = new BufferedReader(new InputStreamReader(this.connection.getInputStream()));
