@@ -257,6 +257,7 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 			btnArt.setEnabled(true);
 			btnConnect.setEnabled(false);
 			name_textField.setEnabled(false);
+			this.enableRadioButtons();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "Connection error");
 		}
@@ -273,19 +274,7 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 			}
 			else {
 				currentQuestion = Question.fromString(reply);
-				lblQuestion.setText(currentQuestion.getTheQuestion());
-				String [] answers = currentQuestion.getAnswers();
-				rdbtnAnswer1.setText(answers[0]);
-				rdbtnAnswer2.setText(answers[1]);
-				rdbtnAnswer3.setText(answers[2]);
-				rdbtnAnswer4.setText(answers[3]);
-				lblCorrect.setVisible(false);
-				rdbtnAnswer1.setEnabled(true);
-				rdbtnAnswer2.setEnabled(true);
-				rdbtnAnswer3.setEnabled(true);
-				rdbtnAnswer4.setEnabled(true);
-				btnCheck.setEnabled(true);
-				btnPlayNoMore.setEnabled(true);
+				this.setQuestion(currentQuestion);
 			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "Connection error");
@@ -303,19 +292,7 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 			}
 			else {
 				currentQuestion = Question.fromString(reply);
-				lblQuestion.setText(currentQuestion.getTheQuestion());
-				String [] answers = currentQuestion.getAnswers();
-				rdbtnAnswer1.setText(answers[0]);
-				rdbtnAnswer2.setText(answers[1]);
-				rdbtnAnswer3.setText(answers[2]);
-				rdbtnAnswer4.setText(answers[3]);
-				lblCorrect.setVisible(false);
-				rdbtnAnswer1.setEnabled(true);
-				rdbtnAnswer2.setEnabled(true);
-				rdbtnAnswer3.setEnabled(true);
-				rdbtnAnswer4.setEnabled(true);
-				btnCheck.setEnabled(true);
-				btnPlayNoMore.setEnabled(true);
+				this.setQuestion(currentQuestion);
 			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "Connection error");
@@ -333,19 +310,7 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 			}
 			else {
 				currentQuestion = Question.fromString(reply);
-				lblQuestion.setText(currentQuestion.getTheQuestion());
-				String [] answers = currentQuestion.getAnswers();
-				rdbtnAnswer1.setText(answers[0]);
-				rdbtnAnswer2.setText(answers[1]);
-				rdbtnAnswer3.setText(answers[2]);
-				rdbtnAnswer4.setText(answers[3]);
-				lblCorrect.setVisible(false);
-				rdbtnAnswer1.setEnabled(true);
-				rdbtnAnswer2.setEnabled(true);
-				rdbtnAnswer3.setEnabled(true);
-				rdbtnAnswer4.setEnabled(true);
-				btnCheck.setEnabled(true);
-				btnPlayNoMore.setEnabled(true);
+				this.setQuestion(currentQuestion);
 			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "Connection error");
@@ -410,7 +375,18 @@ public class ClientFrameCS extends JFrame implements ActionListener {
 	 * to display a question and its four answers... 
 	 */
 
-	
+	public void setQuestion(Question question) {
+		lblQuestion.setText(currentQuestion.getTheQuestion());
+		String [] answers = currentQuestion.getAnswers();
+		rdbtnAnswer1.setText(answers[0]);
+		rdbtnAnswer2.setText(answers[1]);
+		rdbtnAnswer3.setText(answers[2]);
+		rdbtnAnswer4.setText(answers[3]);
+		lblCorrect.setVisible(false);
+		buttonGroup.clearSelection();
+		btnCheck.setEnabled(true);
+		btnPlayNoMore.setEnabled(true);
+	}	
 	
 	
 	private void connect () throws IOException {
@@ -435,4 +411,11 @@ public class ClientFrameCS extends JFrame implements ActionListener {
         outputChannel.println(request);
     }
 	
+	private void enableRadioButtons() {
+		rdbtnAnswer1.setEnabled(true);
+		rdbtnAnswer2.setEnabled(true);
+		rdbtnAnswer3.setEnabled(true);
+		rdbtnAnswer4.setEnabled(true);
+	}
+
 }
