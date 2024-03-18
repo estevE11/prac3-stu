@@ -24,8 +24,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -326,10 +328,14 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 
 	private static TrivialSolitaire server;
 
-	private static TrivialSolitaire getServer() throws Exception {
+	private static TrivialSolitaire getServer() {
 		if (server != null)
 			return server;
-		server = (TrivialSolitaire) Naming.lookup("rmi://localhost:1998/TrivialSolitaire");
+		try {
+			server = (TrivialSolitaire) Naming.lookup("rmi://localhost:1998/TrivialSolitaire");
+		} catch (MalformedURLException | RemoteException | NotBoundException e) {
+			JOptionPane.showMessageDialog(null, "Error connecting to server", "Error", JOptionPane.ERROR_MESSAGE);
+		}
 		return server;	
 	}
 
