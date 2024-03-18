@@ -254,44 +254,56 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	
 	protected void btnConnectactionPerformed(ActionEvent arg0) throws Exception {
 		/* COMPLETE */
-		getServer().Hello();
+		this.id = getServer().Hello();
 	}
 	
-	protected void btnGeographyactionPerformed(ActionEvent arg0) {
+	protected void btnGeographyactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
+		Question q = getServer().next(id, "GEO");
+		this.setQuestion(q);
 	}
 	
-	protected void btnScienceactionPerformed(ActionEvent arg0) {
+	protected void btnScienceactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
+		Question q = getServer().next(id, "SCIENCE");
+		this.setQuestion(q);
 	}
 	
-	protected void btnArtactionPerformed(ActionEvent arg0) {
+	protected void btnArtactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
+		Question q = getServer().next(id, "ART");
+		this.setQuestion(q);
 	}
 	
-	protected void btnPlayNoMoreactionPerformed(ActionEvent arg0) {
+	protected void btnPlayNoMoreactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
+		getServer().stop(id);
 	}
 	
 	protected void rdbtnAnswer1actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.selectAnswer(1);
 	}
 	
 	protected void rdbtnAnswer2actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.selectAnswer(2);
 	}
 	
 	protected void rdbtnAnswer3actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.selectAnswer(3);
 	}
 	
 	protected void rdbtnAnswer4actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.selectAnswer(4);
 	}
 		
 	
 	protected void btnCheckactionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.checkAnswer();
 	}
 	
 	
@@ -301,7 +313,56 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	 * add here other non-GUI attributes and helper methods 
 	 */
 
+	private int id;
+	private int currentCorrect = -1;
+	private int currentSelected = -1;
+
+	private static TrivialSolitaire server;
+
 	private static TrivialSolitaire getServer() throws Exception {
-		return (TrivialSolitaire) Naming.lookup("rmi://localhost:1998/TrivialSolitaire");
+		if (server != null)
+			return server;
+		server = (TrivialSolitaire) Naming.lookup("rmi://localhost:1998/TrivialSolitaire");
+		return server;	
+	}
+
+	private void setQuestion(Question question) {
+		lblQuestion.setText(question.getTheQuestion());
+		String[] answers = question.getAnswers();
+		rdbtnAnswer1.setText(answers[0]);
+		rdbtnAnswer2.setText(answers[1]);
+		rdbtnAnswer3.setText(answers[2]);
+		rdbtnAnswer4.setText(answers[3]);
+		this.currentCorrect = question.getCorrect();
+	}
+
+	private void selectAnswer(int answer) {
+		this.currentSelected = answer;
+		this.rdbtnAnswer1.setSelected(false);
+		this.rdbtnAnswer2.setSelected(false);
+		this.rdbtnAnswer3.setSelected(false);
+		this.rdbtnAnswer4.setSelected(false);
+		switch (answer) {
+		case 0:
+			this.rdbtnAnswer1.setSelected(true);
+			break;
+		case 1:
+			this.rdbtnAnswer2.setSelected(true);
+			break;
+		case 2:
+			this.rdbtnAnswer3.setSelected(true);
+			break;
+		case 3:
+			this.rdbtnAnswer4.setSelected(true);
+			break;
+		}
+	}
+
+	private void checkAnswer() {
+		if (this.currentSelected == this.currentCorrect) {
+			lblCorrect.setVisible(true);
+		} else {
+			lblCorrect.setVisible(false);
+		}
 	}
 }
