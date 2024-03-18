@@ -334,6 +334,10 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	}
 
 	private void setQuestion(Question question) {
+		if (question == null) {
+			JOptionPane.showMessageDialog(this, "NO MORE QUESTIONS OF THIS KIND", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
 		lblQuestion.setText(question.getTheQuestion());
 		this.setAnswers(question.getAnswers());
 
