@@ -255,6 +255,11 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	protected void btnConnectactionPerformed(ActionEvent arg0) throws Exception {
 		/* COMPLETE */
 		this.id = getServer().Hello();
+		btnGeography.setEnabled(true);
+		btnScience.setEnabled(true);
+		btnArt.setEnabled(true);
+		btnConnect.setEnabled(false);
+		name_textField.setEnabled(false);
 	}
 	
 	protected void btnGeographyactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
@@ -278,6 +283,7 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	protected void btnPlayNoMoreactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
 		getServer().stop(id);
+		System.exit(0);
 	}
 	
 	protected void rdbtnAnswer1actionPerformed(ActionEvent arg0) {
@@ -314,7 +320,7 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	 */
 
 	private int id;
-	private int currentCorrect = -1;
+	private Question currentQuestion;
 	private int currentSelected = -1;
 
 	private static TrivialSolitaire server;
@@ -333,7 +339,15 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 		rdbtnAnswer2.setText(answers[1]);
 		rdbtnAnswer3.setText(answers[2]);
 		rdbtnAnswer4.setText(answers[3]);
-		this.currentCorrect = question.getCorrect();
+		lblCorrect.setVisible(false);
+		rdbtnAnswer1.setEnabled(true);
+		rdbtnAnswer2.setEnabled(true);
+		rdbtnAnswer3.setEnabled(true);
+		rdbtnAnswer4.setEnabled(true);
+		btnCheck.setEnabled(true);
+		btnPlayNoMore.setEnabled(true);
+		this.currentQuestion = question;
+		this.selectAnswer(-1);
 	}
 
 	private void selectAnswer(int answer) {
@@ -343,26 +357,27 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 		this.rdbtnAnswer3.setSelected(false);
 		this.rdbtnAnswer4.setSelected(false);
 		switch (answer) {
-		case 0:
+		case 1:
 			this.rdbtnAnswer1.setSelected(true);
 			break;
-		case 1:
+		case 2:
 			this.rdbtnAnswer2.setSelected(true);
 			break;
-		case 2:
+		case 3:
 			this.rdbtnAnswer3.setSelected(true);
 			break;
-		case 3:
+		case 4:
 			this.rdbtnAnswer4.setSelected(true);
 			break;
 		}
 	}
 
 	private void checkAnswer() {
-		if (this.currentSelected == this.currentCorrect) {
-			lblCorrect.setVisible(true);
+		if (this.currentSelected == this.currentQuestion.getCorrect()) {
+			lblCorrect.setText("Correct!");
 		} else {
-			lblCorrect.setVisible(false);
+			lblCorrect.setText("Incorrect, the correct answer was " + this.currentQuestion.getCorrect());
 		}
+		lblCorrect.setVisible(true);
 	}
 }
