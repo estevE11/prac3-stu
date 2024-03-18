@@ -1,6 +1,5 @@
 package rmi;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import common.*;
 
@@ -20,18 +19,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 
 import java.awt.Font;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 
