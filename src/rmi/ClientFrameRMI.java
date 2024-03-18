@@ -248,6 +248,7 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	protected void btnConnectactionPerformed(ActionEvent arg0) throws Exception {
 		/* COMPLETE */
 		this.id = getServer().Hello();
+		JOptionPane.showMessageDialog(this, "Connection established with ID: " + id, "Connected succesfuly", JOptionPane.INFORMATION_MESSAGE);
 		btnGeography.setEnabled(true);
 		btnScience.setEnabled(true);
 		btnArt.setEnabled(true);
