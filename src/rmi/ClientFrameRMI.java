@@ -24,7 +24,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -212,81 +215,104 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 		contentPane.setLayout(gl_contentPane);
 	}
 	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getSource() == rdbtnAnswer4) {
-			rdbtnAnswer4actionPerformed(arg0);
-		}
-		if (arg0.getSource() == rdbtnAnswer3) {
-			rdbtnAnswer3actionPerformed(arg0);
-		}
-		if (arg0.getSource() == rdbtnAnswer2) {
-			rdbtnAnswer2actionPerformed(arg0);
-		}
-		if (arg0.getSource() == rdbtnAnswer1) {
-			rdbtnAnswer1actionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnCheck) {
-			btnCheckactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnPlayNoMore) {
-			btnPlayNoMoreactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnArt) {
-			btnArtactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnScience) {
-			btnScienceactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnGeography) {
-			btnGeographyactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnConnect) {
-			btnConnectactionPerformed(arg0);
-		}
-		if (arg0.getSource() == this.name_textField) {
-			btnConnectactionPerformed(arg0);
-		}
-		
+		try {
+			if (arg0.getSource() == rdbtnAnswer4) {
+				rdbtnAnswer4actionPerformed(arg0);
+			}
+			if (arg0.getSource() == rdbtnAnswer3) {
+				rdbtnAnswer3actionPerformed(arg0);
+			}
+			if (arg0.getSource() == rdbtnAnswer2) {
+				rdbtnAnswer2actionPerformed(arg0);
+			}
+			if (arg0.getSource() == rdbtnAnswer1) {
+				rdbtnAnswer1actionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnCheck) {
+				btnCheckactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnPlayNoMore) {
+				btnPlayNoMoreactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnArt) {
+				btnArtactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnScience) {
+				btnScienceactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnGeography) {
+				btnGeographyactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnConnect) {
+				btnConnectactionPerformed(arg0);
+			}
+			if (arg0.getSource() == this.name_textField) {
+				btnConnectactionPerformed(arg0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
 	}
 	
-	protected void btnConnectactionPerformed(ActionEvent arg0) {
+	protected void btnConnectactionPerformed(ActionEvent arg0) throws Exception {
 		/* COMPLETE */
+		this.id = getServer().Hello();
+		btnGeography.setEnabled(true);
+		btnScience.setEnabled(true);
+		btnArt.setEnabled(true);
+		btnConnect.setEnabled(false);
+		name_textField.setEnabled(false);
+		this.enableRadioButtons();
 	}
 	
-	protected void btnGeographyactionPerformed(ActionEvent arg0) {
+	protected void btnGeographyactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
+		Question q = getServer().next(id, "GEO");
+		this.setQuestion(q);
 	}
 	
-	protected void btnScienceactionPerformed(ActionEvent arg0) {
+	protected void btnScienceactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
+		Question q = getServer().next(id, "SCIENCE");
+		this.setQuestion(q);
 	}
 	
-	protected void btnArtactionPerformed(ActionEvent arg0) {
+	protected void btnArtactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
+		Question q = getServer().next(id, "ART");
+		this.setQuestion(q);
 	}
 	
-	protected void btnPlayNoMoreactionPerformed(ActionEvent arg0) {
+	protected void btnPlayNoMoreactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
 		/* COMPLETE */
+		getServer().stop(id);
+		System.exit(0);
 	}
 	
 	protected void rdbtnAnswer1actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.selectAnswer(1);
 	}
 	
 	protected void rdbtnAnswer2actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.selectAnswer(2);
 	}
 	
 	protected void rdbtnAnswer3actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.selectAnswer(3);
 	}
 	
 	protected void rdbtnAnswer4actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.selectAnswer(4);
 	}
 		
 	
 	protected void btnCheckactionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
+		this.checkAnswer();
 	}
 	
 	
@@ -295,5 +321,67 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	/* COMPLETE
 	 * add here other non-GUI attributes and helper methods 
 	 */
-	
+
+	private int id;
+	private Question currentQuestion;
+	private int currentSelected = -1;
+
+	private static TrivialSolitaire server;
+
+	private static TrivialSolitaire getServer() {
+		if (server != null)
+			return server;
+		try {
+			server = (TrivialSolitaire) Naming.lookup("rmi://localhost:1998/TrivialSolitaire");
+		} catch (MalformedURLException | RemoteException | NotBoundException e) {
+			JOptionPane.showMessageDialog(null, "Error connecting to server", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		return server;	
+	}
+
+	private void setQuestion(Question question) {
+		if (question == null) {
+			JOptionPane.showMessageDialog(this, "NO MORE QUESTIONS OF THIS KIND", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		lblQuestion.setText(question.getTheQuestion());
+		this.setAnswers(question.getAnswers());
+
+		lblCorrect.setVisible(false);
+		
+		this.buttonGroup.clearSelection();
+
+		btnCheck.setEnabled(true);
+		btnPlayNoMore.setEnabled(true);
+
+		this.currentQuestion = question;
+		this.selectAnswer(-1);
+	}
+
+	private void selectAnswer(int answer) {
+		this.currentSelected = answer;
+	}
+
+	private void checkAnswer() {
+		if (this.currentSelected == this.currentQuestion.getCorrect()) {
+			lblCorrect.setText("Correct!");
+		} else {
+			lblCorrect.setText("Incorrect, the correct answer was " + this.currentQuestion.getCorrect());
+		}
+		lblCorrect.setVisible(true);
+	}
+
+	private void setAnswers(String[] answers) {
+		rdbtnAnswer1.setText(answers[0]);
+		rdbtnAnswer2.setText(answers[1]);
+		rdbtnAnswer3.setText(answers[2]);
+		rdbtnAnswer4.setText(answers[3]);
+	}
+
+	private void enableRadioButtons() {
+		rdbtnAnswer1.setEnabled(true);
+		rdbtnAnswer2.setEnabled(true);
+		rdbtnAnswer3.setEnabled(true);
+		rdbtnAnswer4.setEnabled(true);
+	}
 }

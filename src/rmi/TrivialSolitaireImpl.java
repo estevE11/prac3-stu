@@ -22,6 +22,8 @@ public class TrivialSolitaireImpl extends UnicastRemoteObject implements Trivial
 	private static List<Question> art, geo, science; // shouldn't modify these lists...
 	
 	/* COMPLETE 1a add other necessary attributes */
+
+	private LinkedList<ClientInfo> clients = new LinkedList<ClientInfo>();
 	
 	// static initializer (initializes the lists)
 	static {
@@ -57,25 +59,36 @@ public class TrivialSolitaireImpl extends UnicastRemoteObject implements Trivial
 
 	@Override
 	public int Hello() throws RemoteException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'Hello'");
+		return addClient();
 	}
 
 	@Override
 	public Question next(int id, String type) throws RemoteException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'next'");
+		return getClient(id).nextQuestion(type);	
 	}
 
 	@Override
 	public void stop(int id) throws RemoteException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'stop'");
+		removeClient(id);
 	}
 
 	/* COMPLETE 2: implement interface and other helper methods */
-	
 
+	// Adds a client with an id and returns the id
+	private int addClient() {
+		int id = clients.size();
+		this.clients.add(new ClientInfo(id, art, geo, science));
+		return id;
+	}
+
+	private ClientInfo getClient(int id) {
+		return this.clients.stream().filter(c -> c.id == id).findFirst().get();
+	}
+
+	private void removeClient(int id) {
+		ClientInfo client = clients.stream().filter(c -> c.id == id).findFirst().get();
+		this.clients.remove(client);
+	}
 }
 
 
@@ -84,4 +97,25 @@ public class TrivialSolitaireImpl extends UnicastRemoteObject implements Trivial
 class ClientInfo {
 	/* COMPLETE */
 
+	public final int id;
+	private HashMap<String, LinkedList<Question>> questions;
+
+	public ClientInfo(int id, List<Question> art, List<Question> geo, List<Question> science) {
+		this.id = id;
+		this.questions = new HashMap<String, LinkedList<Question>>();
+		this.questions.put("ART", new LinkedList<Question>(art));
+		this.questions.put("GEO", new LinkedList<Question>(geo));
+		this.questions.put("SCIENCE", new LinkedList<Question>(science));
+	}
+
+	public Question nextQuestion(String type) {
+		LinkedList<Question> questions = this.questions.get(type);
+		if (questions.size() > 0) {
+			int index = (int) (Math.random() * questions.size());
+			Question q = questions.get(index);
+			questions.remove(index);
+			return q;
+		}
+		return null;
+	} 
 }
