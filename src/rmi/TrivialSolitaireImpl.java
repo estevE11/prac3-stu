@@ -58,6 +58,7 @@ public class TrivialSolitaireImpl extends UnicastRemoteObject implements Trivial
 	@Override
 	public int Hello() throws RemoteException {
 		// TODO Auto-generated method stub
+		System.out.println("Hello");
 		throw new UnsupportedOperationException("Unimplemented method 'Hello'");
 	}
 

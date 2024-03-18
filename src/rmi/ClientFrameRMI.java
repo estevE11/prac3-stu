@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -212,44 +213,48 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 		contentPane.setLayout(gl_contentPane);
 	}
 	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getSource() == rdbtnAnswer4) {
-			rdbtnAnswer4actionPerformed(arg0);
-		}
-		if (arg0.getSource() == rdbtnAnswer3) {
-			rdbtnAnswer3actionPerformed(arg0);
-		}
-		if (arg0.getSource() == rdbtnAnswer2) {
-			rdbtnAnswer2actionPerformed(arg0);
-		}
-		if (arg0.getSource() == rdbtnAnswer1) {
-			rdbtnAnswer1actionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnCheck) {
-			btnCheckactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnPlayNoMore) {
-			btnPlayNoMoreactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnArt) {
-			btnArtactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnScience) {
-			btnScienceactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnGeography) {
-			btnGeographyactionPerformed(arg0);
-		}
-		if (arg0.getSource() == btnConnect) {
-			btnConnectactionPerformed(arg0);
-		}
-		if (arg0.getSource() == this.name_textField) {
-			btnConnectactionPerformed(arg0);
-		}
-		
+		try {
+			if (arg0.getSource() == rdbtnAnswer4) {
+				rdbtnAnswer4actionPerformed(arg0);
+			}
+			if (arg0.getSource() == rdbtnAnswer3) {
+				rdbtnAnswer3actionPerformed(arg0);
+			}
+			if (arg0.getSource() == rdbtnAnswer2) {
+				rdbtnAnswer2actionPerformed(arg0);
+			}
+			if (arg0.getSource() == rdbtnAnswer1) {
+				rdbtnAnswer1actionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnCheck) {
+				btnCheckactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnPlayNoMore) {
+				btnPlayNoMoreactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnArt) {
+				btnArtactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnScience) {
+				btnScienceactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnGeography) {
+				btnGeographyactionPerformed(arg0);
+			}
+			if (arg0.getSource() == btnConnect) {
+				btnConnectactionPerformed(arg0);
+			}
+			if (arg0.getSource() == this.name_textField) {
+				btnConnectactionPerformed(arg0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
 	}
 	
-	protected void btnConnectactionPerformed(ActionEvent arg0) {
+	protected void btnConnectactionPerformed(ActionEvent arg0) throws Exception {
 		/* COMPLETE */
+		getServer().Hello();
 	}
 	
 	protected void btnGeographyactionPerformed(ActionEvent arg0) {
@@ -295,5 +300,8 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 	/* COMPLETE
 	 * add here other non-GUI attributes and helper methods 
 	 */
-	
+
+	private static TrivialSolitaire getServer() throws Exception {
+		return (TrivialSolitaire) Naming.lookup("rmi://localhost:1998/TrivialSolitaire");
+	}
 }
