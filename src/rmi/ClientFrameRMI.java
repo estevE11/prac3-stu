@@ -260,6 +260,7 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 		btnArt.setEnabled(true);
 		btnConnect.setEnabled(false);
 		name_textField.setEnabled(false);
+		this.enableRadioButtons();
 	}
 	
 	protected void btnGeographyactionPerformed(ActionEvent arg0) throws RemoteException, Exception {
@@ -334,42 +335,21 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 
 	private void setQuestion(Question question) {
 		lblQuestion.setText(question.getTheQuestion());
-		String[] answers = question.getAnswers();
-		rdbtnAnswer1.setText(answers[0]);
-		rdbtnAnswer2.setText(answers[1]);
-		rdbtnAnswer3.setText(answers[2]);
-		rdbtnAnswer4.setText(answers[3]);
+		this.setAnswers(question.getAnswers());
+
 		lblCorrect.setVisible(false);
-		rdbtnAnswer1.setEnabled(true);
-		rdbtnAnswer2.setEnabled(true);
-		rdbtnAnswer3.setEnabled(true);
-		rdbtnAnswer4.setEnabled(true);
+		
+		this.buttonGroup.clearSelection();
+
 		btnCheck.setEnabled(true);
 		btnPlayNoMore.setEnabled(true);
+
 		this.currentQuestion = question;
 		this.selectAnswer(-1);
 	}
 
 	private void selectAnswer(int answer) {
 		this.currentSelected = answer;
-		this.rdbtnAnswer1.setSelected(false);
-		this.rdbtnAnswer2.setSelected(false);
-		this.rdbtnAnswer3.setSelected(false);
-		this.rdbtnAnswer4.setSelected(false);
-		switch (answer) {
-		case 1:
-			this.rdbtnAnswer1.setSelected(true);
-			break;
-		case 2:
-			this.rdbtnAnswer2.setSelected(true);
-			break;
-		case 3:
-			this.rdbtnAnswer3.setSelected(true);
-			break;
-		case 4:
-			this.rdbtnAnswer4.setSelected(true);
-			break;
-		}
 	}
 
 	private void checkAnswer() {
@@ -379,5 +359,19 @@ public class ClientFrameRMI extends JFrame implements ActionListener {
 			lblCorrect.setText("Incorrect, the correct answer was " + this.currentQuestion.getCorrect());
 		}
 		lblCorrect.setVisible(true);
+	}
+
+	private void setAnswers(String[] answers) {
+		rdbtnAnswer1.setText(answers[0]);
+		rdbtnAnswer2.setText(answers[1]);
+		rdbtnAnswer3.setText(answers[2]);
+		rdbtnAnswer4.setText(answers[3]);
+	}
+
+	private void enableRadioButtons() {
+		rdbtnAnswer1.setEnabled(true);
+		rdbtnAnswer2.setEnabled(true);
+		rdbtnAnswer3.setEnabled(true);
+		rdbtnAnswer4.setEnabled(true);
 	}
 }
