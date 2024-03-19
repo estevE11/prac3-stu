@@ -32,8 +32,10 @@ public class Server  extends Thread {
 		/* COMPLETE 1a: create ServerSocket and get ready to spawn new server instances 
 		 * to service incoming connections (on demand approach) */
 		serverSocket = new ServerSocket(4445);	
-		connection = serverSocket.accept();
-		new Server(connection).start();
+		while(true) {
+			connection = serverSocket.accept();
+			new Server(connection).start();
+		}
 	}
 	// LAUNCHER ENDS HERE
 	
