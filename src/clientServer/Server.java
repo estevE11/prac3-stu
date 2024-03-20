@@ -33,8 +33,10 @@ public class Server  extends Thread {
 		 * to service incoming connections (on demand approach) */
 		serverSocket = new ServerSocket(4445);	
 		while(true) {
-			connection = serverSocket.accept();
-			new Server(connection).start();
+			synchronized (serverSocket) {
+				connection = serverSocket.accept();
+				new Server(connection).start();
+			}
 		}
 	}
 	// LAUNCHER ENDS HERE

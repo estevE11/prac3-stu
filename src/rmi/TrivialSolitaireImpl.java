@@ -82,12 +82,20 @@ public class TrivialSolitaireImpl extends UnicastRemoteObject implements Trivial
 	}
 
 	private ClientInfo getClient(int id) {
-		return this.clients.stream().filter(c -> c.id == id).findFirst().get();
+		// Use use synchronized block to avoid concurrent modification
+		ClientInfo response;
+		synchronized(this.clients) {
+			response = this.clients.stream().filter(c -> c.id == id).findFirst().get();
+		}
+		return response;
 	}
 
 	private void removeClient(int id) {
-		ClientInfo client = clients.stream().filter(c -> c.id == id).findFirst().get();
-		this.clients.remove(client);
+		// Use use synchronized block to avoid concurrent modification
+		synchronized(this.clients) {
+			ClientInfo client = this.getClient(id);
+			this.clients.remove(client);
+		}
 	}
 }
 
