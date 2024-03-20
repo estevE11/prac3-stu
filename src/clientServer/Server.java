@@ -128,20 +128,22 @@ public class Server  extends Thread {
 	}
 
 	private Question getRandomQuestion(String type) {
-		Question q = null;
-		
-		LinkedList<Integer> questionsLeft = this.questionsLeft.get(type);
-		if (questionsLeft.size() > 0) {
-			int index = (int) (Math.random() * questionsLeft.size());
+		synchronized (this) {
+			Question q = null;
+			
+			LinkedList<Integer> questionsLeft = this.questionsLeft.get(type);
+			if (questionsLeft.size() > 0) {
+				int index = (int) (Math.random() * questionsLeft.size());
 
-			if(type.equals("ART")) q = art.get(questionsLeft.get(index));
-			else if(type.equals("SCIENCE")) q = science.get(questionsLeft.get(index));
-			else if(type.equals("GEO")) q = geo.get(questionsLeft.get(index));
+				if(type.equals("ART")) q = art.get(questionsLeft.get(index));
+				else if(type.equals("SCIENCE")) q = science.get(questionsLeft.get(index));
+				else if(type.equals("GEO")) q = geo.get(questionsLeft.get(index));
 
-			questionsLeft.remove(index);
-			return q;
+				questionsLeft.remove(index);
+				return q;
+			}
+			return null;
 		}
-		return null;
 	}
 	
 
