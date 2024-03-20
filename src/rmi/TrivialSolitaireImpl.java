@@ -117,13 +117,15 @@ class ClientInfo {
 	}
 
 	public Question nextQuestion(String type) {
-		LinkedList<Question> questions = this.questions.get(type);
-		if (questions.size() > 0) {
-			int index = (int) (Math.random() * questions.size());
-			Question q = questions.get(index);
-			questions.remove(index);
-			return q;
+		synchronized (this.questions) {
+			LinkedList<Question> questions = this.questions.get(type);
+			if (questions.size() > 0) {
+				int index = (int) (Math.random() * questions.size());
+				Question q = questions.get(index);
+				questions.remove(index);
+				return q;
+			}
+			return null;
 		}
-		return null;
 	} 
 }
